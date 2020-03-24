@@ -1,0 +1,4 @@
+assets/assets.go
+assets/resource*.syso
+./iconicle
+./iconicle.exe
