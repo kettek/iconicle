@@ -1,12 +1,12 @@
 package iconicle
 
 import (
-	"github.com/zserge/webview"
 	"iconicle/assets"
+
+	"github.com/zserge/webview"
 
 	"fmt"
 	"html/template"
-	"net/url"
 )
 
 var w webview.WebView
@@ -29,30 +29,28 @@ func Run() error {
 
 	w = webview.New(true)
 	w.SetTitle("iconicle")
-	w.SetSize(512, 640, 0)
+	w.SetSize(512, 640, webview.HintMin)
 
-	w.Init(string(myJS))
+	w.Init(string(myJS) + fmt.Sprintf(`
+	window.addEventListener('DOMContentLoaded', () => {
+		let css = "%s"
+		var style = document.createElement('style');
+		var head = document.head || document.getElementsByTagName('head')[0];
+		style.setAttribute('type', 'text/css');
+		if (style.styleSheet) {
+			style.styleSheet.cssText = css;
+		} else {
+			style.appendChild(document.createTextNode(css));
+		}
+		head.appendChild(style);
+	})`, template.JSEscapeString(string(myCSS))))
 
-	w.Navigate(`data:text/html,` + url.PathEscape(string(myHTML)))
+	w.Navigate(`data:text/html,` + string(myHTML))
 
 	defer w.Destroy()
 
-	// Inject CSS
-	w.Eval(fmt.Sprintf(`(function(css){
-		window.addEventListener('load', () => {
-   	  var style = document.createElement('style');
-   	  var head = document.head || document.getElementsByTagName('head')[0];
-   	  style.setAttribute('type', 'text/css');
-   	  if (style.styleSheet) {
-   	  	style.styleSheet.cssText = css;
-   	  } else {
-   	  	style.appendChild(document.createTextNode(css));
-			}
-			head.appendChild(style);
-		})
-  })("%s")`, template.JSEscapeString(string(myCSS))))
-
 	w.Run()
+	// Inject CSS
 
 	return nil
 }

@@ -30,6 +30,7 @@ body {
 .Icons__Group {
   display: flex;
   align-items: flex-start;
+  user-select: none;
 }
 .Icons__Group__Icons.-hidden {
   height: 0;

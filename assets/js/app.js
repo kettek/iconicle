@@ -102,6 +102,40 @@ const I = {
         s2.icon.image.el.style.width = size[0]+'px'
         s2.icon.image.el.style.height = size[1]+'px'
         s2.icon.title.el.innerHTML = icon
+
+        s2.icon.el.addEventListener('dragover', e => {
+          e.preventDefault()
+        }, false)
+        s2.icon.el.addEventListener('drop', e => {
+          e.preventDefault()
+
+          if (e.dataTransfer.items) {
+            // Use DataTransferItemList interface to access the file(s)
+            for (var i = 0; i < e.dataTransfer.items.length; i++) {
+              // If dropped items aren't files, reject them
+              if (e.dataTransfer.items[i].kind === 'file') {
+                var file = e.dataTransfer.items[i].getAsFile();
+                let br = new FileReader()
+                br.addEventListener('load', e => {
+                  // TODO: Store as the binary data for this size
+                })
+                br.readAsBinaryString(file)
+                let fr = new FileReader()
+                fr.addEventListener('load', e => {
+                  // TODO: Store as the image data for this size and cause all shared icons with same size to change.
+                  s2.icon.image.el.src = e.target.result
+                })
+                fr.readAsDataURL(file)
+              }
+            }
+          } else {
+            // Use DataTransfer interface to access the file(s)
+            for (var i = 0; i < e.dataTransfer.files.length; i++) {
+              console.log('... file[' + i + '].name = ' + e.dataTransfer.files[i].name);
+            }
+          }
+
+        }, false)
       })
     }
   }
