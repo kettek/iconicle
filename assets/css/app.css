@@ -7,7 +7,7 @@ body {
   color: #ffe;
   margin: 0;
   padding: 0;
-  font-size: 2vw;
+  font-size: 1.5vw;
   display: flex;
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -32,6 +32,10 @@ body {
   align-items: flex-start;
   user-select: none;
 }
+.Icons__Group__Title {
+  text-transform: uppercase;
+  font-weight: bold;
+}
 .Icons__Group__Icons.-hidden {
   height: 0;
 }
@@ -40,8 +44,6 @@ body {
   align-items: center;
   transition: .2s height;
   overflow: hidden;
-}
-.Icons__Group__Icons__Title {
 }
 .Icons__Group__Icons__Icon.-loading {
   border: 1px solid green;
@@ -53,6 +55,8 @@ body {
   margin: 1em;
 }
 .Icons__Group__Icons__Icon__Image {
+  border: 1px solid white;
 }
 .Icons__Group__Icons__Icon__Title {
+  font-weight: bold;
 }
