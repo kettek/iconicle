@@ -50,30 +50,36 @@ const I = {
     }
   },
   // Make is a quick HTML element creator. It takes in an object whose keys are in the form of 'name:tag.class', where name will be the resulting property in the return object for that given element.
-  make: (structure, root) => {
+  make: (k, structure, root) => {
     let obj = {}
-    for (let [k, v] of Object.entries(structure)) {
-      let prop, tag, className = ''
-      let split = k.split(':')
-      prop = split[0]
-      split = split[1] ? split[1].split('.') : ['div']
-      tag = split[0]
-      className = split[1] ? split[1] : ''
 
-      let el = document.createElement(tag)
-      el.className = className
-      obj[prop] = Object.assign({
-        el: el,
-      }, I.make(v, el))
-      root.appendChild(el)
+    // Get our creation properties from k
+    let prop, tag, className = ''
+    let split = k.split(':')
+    prop = split[0]
+    split = split[1] ? split[1].split('.') : ['div']
+    tag = split[0]
+    className = split[1] ? split[1] : ''
+    // Assign prop to our obj so our parent knows us.
+    obj.prop = prop
+    // Create our element and assign as needed
+    let el = document.createElement(tag)
+    el.className = className
+    obj.el = el
+    // Iterate over our structure
+    for (let [k, v] of Object.entries(structure)) {
+      let child = I.make(k, v, el)
+      obj[child.prop] = child
     }
+
+    root.appendChild(el)
     return obj
   },
   init: () => {
     I.el = document.getElementById('Icons')
     for(let [key, group] of Object.entries(I.groups)) {
       // Create our basic element structure.
-      let s = I.make({
+      let s = I.make('group:article.Icons__Group', {
         'group:article.Icons__Group': {
           'title:label.Icons__Group__Title': {
             'show:label': {
@@ -104,21 +110,19 @@ const I = {
       s.group.title.show.checkbox.el.dispatchEvent(new Event('change'))
       // Create our icons.
       group.icons.forEach((icon, index) => {
-        let s2 = I.make({
-          'icon:span.Icons__Group__Icons__Icon': {
-            'image:img.Icons__Group__Icons__Icon__Image': {},
-            'title:div.Icons__Group__Icons__Icon__Title': {},
-          }
+        let s2 = I.make('icon:span.Icons__Group__Icons__Icon', {
+          'image:img.Icons__Group__Icons__Icon__Image': {},
+          'title:div.Icons__Group__Icons__Icon__Title': {},
         }, s.group.icons.el)
         let size = icon.split('x')
-        s2.icon.image.el.style.width = size[0]+'px'
-        s2.icon.image.el.style.height = size[1]+'px'
-        s2.icon.title.el.innerHTML = icon
+        s2.image.el.style.width = size[0]+'px'
+        s2.image.el.style.height = size[1]+'px'
+        s2.title.el.innerHTML = icon
 
-        s2.icon.el.addEventListener('dragover', e => {
+        s2.el.addEventListener('dragover', e => {
           e.preventDefault()
         }, false)
-        s2.icon.el.addEventListener('drop', e => {
+        s2.el.addEventListener('drop', e => {
           e.preventDefault()
 
           if (e.dataTransfer.items) {
@@ -126,7 +130,7 @@ const I = {
             for (var i = 0; i < e.dataTransfer.items.length; i++) {
               // If dropped items aren't files, reject them
               if (e.dataTransfer.items[i].kind === 'file') {
-                s2.icon.el.classList.add('-loading')
+                s2.el.classList.add('-loading')
                 var file = e.dataTransfer.items[i].getAsFile();
                 let br = new FileReader()
                 br.addEventListener('load', e => {
@@ -136,8 +140,8 @@ const I = {
                 let fr = new FileReader()
                 fr.addEventListener('load', e => {
                   // TODO: Store as the image data for this size and cause all shared icons with same size to change.
-                  s2.icon.image.el.src = e.target.result
-                  s2.icon.el.classList.remove('-loading')
+                  s2.image.el.src = e.target.result
+                  s2.el.classList.remove('-loading')
                 })
                 fr.readAsDataURL(file)
               }
