@@ -29,7 +29,7 @@ func Run() error {
 
 	w = webview.New(true)
 	w.SetTitle("iconicle")
-	w.SetSize(512, 640, webview.HintMin)
+	w.SetSize(640, 360, webview.HintMin)
 
 	w.Init(string(myJS) + fmt.Sprintf(`
 	window.addEventListener('DOMContentLoaded', () => {
